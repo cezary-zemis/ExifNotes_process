@@ -34,8 +34,14 @@ if not 'artist' in exif_notes :
 if not 'copyright' in exif_notes :
     exif_notes['copyright'] = 'cezaryzemis.name'
 
-def extend_command (value, tag):
+def extend_command (list, key, tag):
     global command
+    value = None
+    if list :
+        if key in list :
+            value = list[key]
+    else :
+        value = key
     if value :
         command += ' -' + tag + '="' + str(value) + '"'
 
@@ -47,45 +53,42 @@ for frame in exif_notes['frames'] :
     command += 'exiftool '
     if not os.environ.get('SAFE') :
         command += " -overwrite_original -ignoreMinorErrors"
-    if 'camera' in frame :
-        extend_command (exif_notes['camera']['make'], 'Make')
-        extend_command (exif_notes['camera']['model'], 'Model')
-        extend_command (exif_notes['camera']['serialNumber'], 'CameraSerialNumber')
+    if 'camera' in exif_notes :
+        extend_command (exif_notes['camera'], 'make', 'Make')
+        extend_command (exif_notes['camera'], 'model', 'Model')
+        extend_command (exif_notes['camera'], 'serialNumber', 'CameraSerialNumber')
     if 'lens' in frame :
-        extend_command (frame['lens']['make'], 'LensMake')
-        extend_command (frame['lens']['model'], 'LensModel')
-        extend_command (frame['lens']['serialNumber'], 'LensSerialNumber')
-    if 'focalLength' in frame :
-        extend_command (frame['focalLength'], 'FocalLength')
-    extend_command (exif_notes['iso'], 'ISO')
-    extend_command (frame['date'], 'DateTime')
-    extend_command (frame['date'], 'DateTimeOriginal')
-    if 'shutter' in frame :
-        extend_command (frame['shutter'], 'ShutterSpeedValue')
-        extend_command (frame['shutter'], 'ExposureTime')
-    if 'aperture' in frame:
-        extend_command (frame['aperture'], 'ApertureValue')
-        extend_command (frame['aperture'], 'FNumber')
-    extend_command (frame['exposureComp'], 'ExposureCompensation')
+        extend_command (frame['lens'], 'make', 'LensMake')
+        extend_command (frame['lens'], 'model', 'LensModel')
+        extend_command (frame['lens'], 'serialNumber', 'LensSerialNumber')
+    extend_command (frame, 'focalLength', 'FocalLength')
+    extend_command (exif_notes, 'iso', 'ISO')
+    extend_command (frame, 'date', 'DateTime')
+    extend_command (frame, 'date', 'DateTimeOriginal')
+    extend_command (frame, 'shutter', 'ShutterSpeedValue')
+    extend_command (frame, 'shutter', 'ExposureTime')
+    extend_command (frame, 'aperture', 'ApertureValue')
+    extend_command (frame, 'aperture', 'FNumber')
+    extend_command (frame, 'exposureComp', 'ExposureCompensation')
     if 'location' in frame :
-        extend_command (frame['location']['latitude'], 'GPSLatitude')
+        extend_command (frame['location'], 'latitude', 'GPSLatitude')
         latitude_ref = None
         if frame['location']['latitude'] :
             if frame['location']['latitude'] > 0 :
                 latitude_ref = 'N'
             else:
                 latitude_ref = 'S'
-        extend_command (latitude_ref, 'GPSLatitudeRef')
-        extend_command (frame['location']['longitude'], 'GPSLongitude')
+        extend_command (None, latitude_ref, 'GPSLatitudeRef')
+        extend_command (frame['location'], 'longitude', 'GPSLongitude')
         longiture_ref = None
         if frame['location']['longitude'] :
             if frame['location']['longitude'] > 0 :
                 longitude_ref = 'E'
             else:
                 longitude_ref = 'W'
-        extend_command (longitude_ref, 'GPSLongitudeRef')
-    extend_command (exif_notes['artist'], 'Artist')
-    extend_command (exif_notes['copyright'], 'Copyright')
+        extend_command (None, longitude_ref, 'GPSLongitudeRef')
+    extend_command (exif_notes, 'artist', 'Artist')
+    extend_command (exif_notes, 'copyright', 'Copyright')
     notes=''
     if frame['note'] : 
         notes=frame['note'] + notes_separator
@@ -93,7 +96,7 @@ for frame in exif_notes['frames'] :
     if 'filters' in frame :
         for filter in frame['filters'] :
             notes += notes_separator + 'Filter: ' + filter['make'] + " " + filter['model']
-    extend_command (notes, 'ImageDescription')
-    command += " " + image_files[i]
+    extend_command (None, notes, 'ImageDescription')
+    command += ' "' + image_files[i] + '"'
     os.system(command)
     i += 1
