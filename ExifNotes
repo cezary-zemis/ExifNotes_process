@@ -90,13 +90,16 @@ for frame in exif_notes['frames'] :
     extend_command (exif_notes, 'artist', 'Artist')
     extend_command (exif_notes, 'copyright', 'Copyright')
     notes=''
+    if exif_notes['name']:
+        notes = 'Spool: ' + exif_notes['name'] + notes_separator
     if frame['note'] : 
-        notes=frame['note'] + notes_separator
+        notes += 'ID: ' + frame['note'] + notes_separator
     notes += 'Film: ' + exif_notes['filmStock']['make'] + " " + exif_notes['filmStock']['model']
     if 'filters' in frame :
         for filter in frame['filters'] :
             notes += notes_separator + 'Filter: ' + filter['make'] + " " + filter['model']
     extend_command (None, notes, 'ImageDescription')
     command += ' "' + image_files[i] + '"'
+    print(command)
     os.system(command)
     i += 1
