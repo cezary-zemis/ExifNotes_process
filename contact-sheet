@@ -69,6 +69,8 @@ if cs_format[0] < 1 or cs_format[1] < 1 :
     raise NameError("contact sheet format must contain two positive values: <colums> <rows>, got" + cs_format)
 
 image_files = ExifNotes.get_image_files()
+if len(image_files) < 1 :
+    raise NameError("Cannot find any image file")
 
 box_width = pwidth - margin_left - margin_right
 box_height = pheight - margin_top - margin_bottom
