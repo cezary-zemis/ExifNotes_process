@@ -9,14 +9,10 @@ from ExifNotes import dry_run, path, extensions, exif_notes_extension, notes_sep
 def scale_font_to_image(img, fn, text):
     fs = 333
     step = round (fs / 2)
-    #print('---------------------')
-    #print('img.w: ', img.width, ' img.h: ', img.height)
     draw = ImageDraw.Draw(img)
     while step >= 1 :
-        #print('fs: ', fs, ' step: ', step)
         draw.font = ImageFont.truetype(fn, fs)
         _, _, w, h = draw.textbbox((0, 0), text)
-        #print('w: ', w, ' h: ', h)
         w = round(0.95 * w)
         h = round(0.95 * h)
         if w > img.width or h > img.height :
@@ -83,13 +79,6 @@ font_size=666
 for count in range(len(image_files)):
     exif_dict = piexif.load(image_files[count])
     exif_data = exif_dict['0th'] | exif_dict['Exif']
-
-    '''
-    print('---------------------------------------------------')
-    print (exif_data)
-    for k, v in exif_data.items():
-        print(ExifTags.TAGS[k], ': ', read_exif(exif_data, ExifTags.TAGS[k]), type(read_exif(exif_data, ExifTags.TAGS[k])))
-    '''
 
     descs.append([])
     descs[count].append(pathlib.Path(image_files[count]).stem + " " + ExifNotes.read_exif(exif_data, 'DateTimeOriginal'))
@@ -170,7 +159,6 @@ for page in range(pages):
                 img = Image.open(image_files[count])
             except:
                 break
-            #exif_data[count] = img.getexif()
             img.thumbnail((ibwidth, ibheight))
             cs.paste(img.convert(mode='RGB'), 
             (
