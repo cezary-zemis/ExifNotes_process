@@ -19,14 +19,14 @@ Usage
 ExifNotes
 ---------
 
-1. record shooting data (exposure, GPS, camera, lens, film) using ExifNotes app (https://play.google.com/store/apps/details?id=com.tommihirvonen.exifnotes)
-1. develop your film and scan it
-* there should be separate directory for each roll or batch of sheet films
-* files must be namaed the way that sorts properly
-* you can put an empty image in place of a failed take (important for a contact sheet)
-* the number of images must match number of frames you recorded in the app
-1. export roll data from ExifNotes app in JSON format into the directory
-1. run ExifNotes script in the directory - it will apply EXIF tags to the images
+*. record shooting data (exposure, GPS, camera, lens, film) using ExifNotes app (https://play.google.com/store/apps/details?id=com.tommihirvonen.exifnotes)
+*. develop your film and scan it
+    * there should be separate directory for each roll or batch of sheet films
+    * files must be namaed the way that sorts properly
+    * you can put an empty image in place of a failed take (important for a contact sheet)
+    * the number of images must match number of frames you recorded in the app
+*. export roll data from ExifNotes app in JSON format into the directory
+*. run ExifNotes script in the directory - it will apply EXIF tags to the images
 
 contact-sheet
 -------------
@@ -34,8 +34,8 @@ contact-sheet
 * put a set of images taken on one roll or batch in its own directory
 * make sure the images contain EXIF tags
 * run contact-sheet in the directory; it requires one or two parameters:
-** one parameter - pre-defined frame format: 135, 645, 66, 67, 69, 45, 57, 810; it is used only to set numner of columns and rows
-** two parameters - number of columns and rows
+    * one parameter - pre-defined frame format: 135, 645, 66, 67, 69, 45, 57, 810; it is used only to set numner of columns and rows
+    * two parameters - number of columns and rows
 
 Notes:
 * contact sheet files will be overwritten without any warning; no security mechanism is implemented
