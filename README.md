@@ -5,12 +5,21 @@ There are the following tools here:
 * ExifNotes - reads a JSON file exported from ExifNotes app and applies EXIF tags to image files
 * contact-sheet - reads EXIF tags from images and creates a contact sheet file
 
+Notes
+-----
+
+* Tested only on Linux, however it shoud work on any system supporting Python 3
+
 Installation
 ============
 
-No installation automatization is provided. I prefere the following way:
+No installation automatization is provided. I use the following way:
+* Python 3 and the following Python moduels are reqired:
+    * Pillow
+	* piexif
+* exiftool binary must be installed
 * create a repos directory somewhere
-* clone ExifNotoes_process into re directory
+* clone ExifNotoes_process into the directory
 * symlink executables (ExifNotes and contact-sheet) to a directory that is in your PATH, e.g. ~/bin or /usr/local/bin
 
 Usage
@@ -19,7 +28,7 @@ Usage
 ExifNotes
 ---------
 
-* record shooting data (exposure, GPS, camera, lens, film) using ExifNotes app (https://play.google.com/store/apps/details?id=com.tommihirvonen.exifnotes)
+* record shooting data (exposure, GPS, camera, lens, film etc) using ExifNotes app (https://play.google.com/store/apps/details?id=com.tommihirvonen.exifnotes)
 * develop your film and scan it
     * there should be separate directory for each roll or batch of sheet films
     * files must be namaed the way that sorts properly
@@ -69,4 +78,5 @@ TODO
 
 * automatic text wrapping 
 * automatic seting height of text boxes depending on film formats
-* support for development details 
+* support for processing details 
+* drop using exiftool, use native Python methods instead
