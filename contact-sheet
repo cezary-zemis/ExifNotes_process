@@ -150,7 +150,7 @@ if len(spool) > 0 :
     spool = spool[0] + ': '
 else:
     spool = ''
-header.append (spool + film + ', ISO: ' + str(iso))
+header.append (spool + film + ', EI: ' + str(iso))
 header.append (cmk + ' ' + cmd)
 hb = Image.new('RGB', (box_width, header_heigth), (255, 255, 255))
 hbd = ImageDraw.Draw(hb)
