@@ -50,4 +50,23 @@ Environment variables can be used to change behaviour of the tools.
 * EXTENSIONS - space separated set of file name extensions to be regardes as images
 * EXIF_NOTES_EXTENSION - file name extension of ExifNotes roll data export
 * NOTES_SEPARATOR - string that separates fields in ImageDescription tag
-* 
+* CS_FILE_NAME - fixed part of contact sheet file name
+* RESOLUTION - contact sheet image resolution [DPI]
+* PAPER_WIDTH - contact sheet image width [mm]
+* PAPER_HEIGHT - contact sheet image height [mm]
+* MARGIN_LEFT, MARGIN_RIGTH, MARGIN_TOP, MARGIN_BOTTOM - margins [mm]
+* HEADER_HEIGTH - height of page header [mm]
+* TEXT_BOX_HEIGTH - height of thumbnail desciprion text box [mm]
+* PADDING_HORIZONTAL - padding between columns [mm]
+* PADDING_VERTICAL - padding between rows [mm]
+* PADDING_TEXT_BOX - vertical padding between between a thumbnail and its description [mm]
+* PADDING_HEADER - vertical padding between page header and the first row [mm]
+* FONT_NAME - name of TrueType font to be used
+* MIN_FONT_SIZE - font will not be scaled down below this value (text will be croped) [pixels]
+
+TODO
+====
+
+* automatic text wrapping 
+* automatic seting height of text boxes depending on film formats
+* support for development details 
