@@ -3,40 +3,7 @@ import sys, os, glob, re, PIL, fnmatch, math, piexif, pathlib
 from PIL import Image, ImageDraw, ImageFont, ExifTags
 from PIL.ExifTags import Base
 
-def inches(mm):
-    return mm / 25.4
-
-def read_environ(env_var_name, default=None):
-    if os.environ.get(env_var_name):
-        return os.environ.get(env_var_name)
-    else:
-        return default
-
-def read_exif(exif_data, key_name):
-    val = ''
-    if Base[key_name].value in exif_data:
-        val = exif_data[Base[key_name].value]
-    if type(val) is bytes :
-        val = val.decode()
-    return val
-
-def read_description(desc_str, key):
-    key = '^' + re.escape(key) + ':'
-    desc_l = desc_str.split('|')
-    for l in range(len(desc_l)):
-        desc_l[l] = desc_l[l].strip()
-    desc_l = list(filter(lambda x: re.match(key, x), desc_l))
-    for l in range(len(desc_l)):
-        desc_l[l] = re.sub(key, '', desc_l[l]).strip()
-    return desc_l
-    
-def findfiles(which, where='.'):
-    '''Returns list of filenames from `where` path matched by 'which'
-       shell pattern. Matching is case-insensitive.'''
-    
-    # TODO: recursive param with walk() filtering
-    rule = re.compile(fnmatch.translate(which), re.IGNORECASE)
-    return [name for name in os.listdir(where) if rule.match(name)]
+import ExifNotes-common
 
 def scale_font_to_image(img, fn, text):
     fs = 333
@@ -62,15 +29,9 @@ def scale_font_to_image(img, fn, text):
     #print('fs: ', fs)
     return fs
      
-dry_run = read_environ('DRY_RUN')
-path = read_environ('WORKING_DIR', '.')
-extensions = read_environ('EXTENSIONS', '.tif .tiff .jpg .jpeg').split(' ')
-exif_notes_extension = read_environ('EXIF_NOTES_EXTENSION', '.json')
-notes_separator = read_environ('NOTES_SEPARATOR', ' | ')
 resolution = int(read_environ('RESOLUTION', 300))
 pwidth = int(inches (read_environ('PAPER_WIDTH', 210 - 10)) * resolution)
 pheight = int(inches (read_environ('PAPER_HEIGHT', 297 - 10)) * resolution)
-cs_file_name = read_environ('CS_FILE_NAME', '_contact_sheet.jpeg')
 margin_left = int(inches(read_environ('MARGIN_LEFT', 0)) * resolution)
 margin_right = int(inches(read_environ('MARGIN_RIGTH', 0)) * resolution)
 margin_top = int(inches(read_environ('MARGIN_TOP', 0)) * resolution)
@@ -83,7 +44,6 @@ padding_text_box = int(inches(read_environ('PADDING_TEXT_BOX', 1)) * resolution)
 padding_header = int(inches(read_environ('PADDING_HEADER', 3)) * resolution)
 font_name = read_environ('FONT_NAME', 'DejaVuSans.ttf')
 min_font_size = read_environ('MIN_FONT_SIZE', 14)
-
 
 film_sizes={
     '66':  (3, 4),
@@ -107,10 +67,7 @@ else:
 if cs_format[0] < 1 or cs_format[1] < 1 :
     raise NameError("contact sheet format must contain two positive values: <colums> <rows>, got" + cs_format)
 
-image_files = []
-for ext in extensions:
-    image_files += [f for f in findfiles('*' + ext, path) if not re.search('contact[_-]sheet', os.path.basename(f))]
-image_files.sort()
+image_files = get_image_files
 
 box_width = pwidth - margin_left - margin_right
 box_height = pheight - margin_top - margin_bottom
