@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import sys, os, glob, re, PIL, fnmatch, math, piexif, pathlib
+import sys, glob, PIL, math, piexif, pathlib
 from PIL import Image, ImageDraw, ImageFont, ExifTags
 from PIL.ExifTags import Base
 
-import ExifNotes-common
+import ExifNotes
+from ExifNotes import dry_run, path, extensions, exif_notes_extension, notes_separator, cs_file_name
 
 def scale_font_to_image(img, fn, text):
     fs = 333
@@ -29,21 +30,21 @@ def scale_font_to_image(img, fn, text):
     #print('fs: ', fs)
     return fs
      
-resolution = int(read_environ('RESOLUTION', 300))
-pwidth = int(inches (read_environ('PAPER_WIDTH', 210 - 10)) * resolution)
-pheight = int(inches (read_environ('PAPER_HEIGHT', 297 - 10)) * resolution)
-margin_left = int(inches(read_environ('MARGIN_LEFT', 0)) * resolution)
-margin_right = int(inches(read_environ('MARGIN_RIGTH', 0)) * resolution)
-margin_top = int(inches(read_environ('MARGIN_TOP', 0)) * resolution)
-margin_bottom = int(inches(read_environ('MARGIN_BOTTOM', 0)) * resolution)
-header_heigth = int(inches(read_environ('HEADER_HEIGTH', 10)) * resolution)
-text_box_heigth = int(inches(read_environ('TEXT_BOX_HEIGTH', 12)) * resolution)
-padding_horizontal = int(inches(read_environ('PADDING_HORIZONTAL', 5)) * resolution)
-padding_vertical = int(inches(read_environ('PADDING_VERTICAL', 1)) * resolution)
-padding_text_box = int(inches(read_environ('PADDING_TEXT_BOX', 1)) * resolution)
-padding_header = int(inches(read_environ('PADDING_HEADER', 3)) * resolution)
-font_name = read_environ('FONT_NAME', 'DejaVuSans.ttf')
-min_font_size = read_environ('MIN_FONT_SIZE', 14)
+resolution = int(ExifNotes.read_environ('RESOLUTION', 300))
+pwidth = int(ExifNotes.inches (ExifNotes.read_environ('PAPER_WIDTH', 210 - 10)) * resolution)
+pheight = int(ExifNotes.inches (ExifNotes.read_environ('PAPER_HEIGHT', 297 - 10)) * resolution)
+margin_left = int(ExifNotes.inches(ExifNotes.read_environ('MARGIN_LEFT', 0)) * resolution)
+margin_right = int(ExifNotes.inches(ExifNotes.read_environ('MARGIN_RIGTH', 0)) * resolution)
+margin_top = int(ExifNotes.inches(ExifNotes.read_environ('MARGIN_TOP', 0)) * resolution)
+margin_bottom = int(ExifNotes.inches(ExifNotes.read_environ('MARGIN_BOTTOM', 0)) * resolution)
+header_heigth = int(ExifNotes.inches(ExifNotes.read_environ('HEADER_HEIGTH', 10)) * resolution)
+text_box_heigth = int(ExifNotes.inches(ExifNotes.read_environ('TEXT_BOX_HEIGTH', 12)) * resolution)
+padding_horizontal = int(ExifNotes.inches(ExifNotes.read_environ('PADDING_HORIZONTAL', 5)) * resolution)
+padding_vertical = int(ExifNotes.inches(ExifNotes.read_environ('PADDING_VERTICAL', 1)) * resolution)
+padding_text_box = int(ExifNotes.inches(ExifNotes.read_environ('PADDING_TEXT_BOX', 1)) * resolution)
+padding_header = int(ExifNotes.inches(ExifNotes.read_environ('PADDING_HEADER', 3)) * resolution)
+font_name = ExifNotes.read_environ('FONT_NAME', 'DejaVuSans.ttf')
+min_font_size = ExifNotes.read_environ('MIN_FONT_SIZE', 14)
 
 film_sizes={
     '66':  (3, 4),
@@ -67,7 +68,7 @@ else:
 if cs_format[0] < 1 or cs_format[1] < 1 :
     raise NameError("contact sheet format must contain two positive values: <colums> <rows>, got" + cs_format)
 
-image_files = get_image_files
+image_files = ExifNotes.get_image_files()
 
 box_width = pwidth - margin_left - margin_right
 box_height = pheight - margin_top - margin_bottom
@@ -89,8 +90,8 @@ for count in range(len(image_files)):
     '''
 
     descs.append([])
-    descs[count].append(pathlib.Path(image_files[count]).stem + " " + read_exif(exif_data, 'DateTimeOriginal'))
-    fn = read_exif (exif_data, 'FNumber')
+    descs[count].append(pathlib.Path(image_files[count]).stem + " " + ExifNotes.read_exif(exif_data, 'DateTimeOriginal'))
+    fn = ExifNotes.read_exif (exif_data, 'FNumber')
     if type(fn) is tuple :
         fn = int(fn[0]) / int(fn[1])
         if fn < 1.2 :
@@ -100,7 +101,7 @@ for count in range(len(image_files)):
         else :
             fn = round (fn)
         fn = 'f/' + str(fn)
-    et = read_exif (exif_data, 'ExposureTime')
+    et = ExifNotes.read_exif (exif_data, 'ExposureTime')
     if type(et) is tuple :
         et = et[0] / et[1]
         if et >=1 :
@@ -111,18 +112,18 @@ for count in range(len(image_files)):
             et = str(et) + 's'
         else :
             et = '1/' + str(round(1 / et)) + 's'
-    ec = read_exif(exif_data, 'ExposureBiasValue')
+    ec = ExifNotes.read_exif(exif_data, 'ExposureBiasValue')
     if ec[0] > 0:
         ec = ' +' + str(ec[0]) + 'EV'
     elif ec[0] < 0:
         ec = ' '  + str(ec[0]) + 'EV'
     else:
         ec = ''
-    descs[count].append(read_exif (exif_data, 'LensMake') + " " + read_exif (exif_data, 'LensModel') + " " + fn + " " + et + ec)
-    filters = read_description(read_exif(exif_data, 'ImageDescription'), 'Filter')
+    descs[count].append(ExifNotes.read_exif (exif_data, 'LensMake') + " " + ExifNotes.read_exif (exif_data, 'LensModel') + " " + fn + " " + et + ec)
+    filters = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'Filter')
     if len(filters) > 0 :
         descs[count].append('F: ' + '; '.join(filters))
-    id=read_description(read_exif(exif_data, 'ImageDescription'), 'ID')
+    id=ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'ID')
     if len(id) > 0 :
         descs[count].append('\n'.join(id))
 
@@ -133,16 +134,16 @@ for count in range(len(image_files)):
 
 exif_dict = piexif.load(image_files[0])
 exif_data = exif_dict['0th'] | exif_dict['Exif']
-cmk = read_exif (exif_data, 'Make')
-cmd = read_exif (exif_data, 'Model')
-iso = read_exif (exif_data, 'ISOSpeedRatings')
-film = read_description(read_exif(exif_data, 'ImageDescription'), 'Film')
+cmk = ExifNotes.read_exif (exif_data, 'Make')
+cmd = ExifNotes.read_exif (exif_data, 'Model')
+iso = ExifNotes.read_exif (exif_data, 'ISOSpeedRatings')
+film = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'Film')
 header = []
 if len(film) > 0 :
     film = film[0]
 else:
     film = ''
-spool = read_description(read_exif(exif_data, 'ImageDescription'), 'Spool')
+spool = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'Spool')
 if len(spool) > 0 :
     spool = spool[0] + ': '
 else:
