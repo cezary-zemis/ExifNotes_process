@@ -40,7 +40,7 @@ padding_vertical = int(ExifNotes.inches(ExifNotes.read_environ('PADDING_VERTICAL
 padding_text_box = int(ExifNotes.inches(ExifNotes.read_environ('PADDING_TEXT_BOX', 1)) * resolution)
 padding_header = int(ExifNotes.inches(ExifNotes.read_environ('PADDING_HEADER', 3)) * resolution)
 font_name = ExifNotes.read_environ('FONT_NAME', 'DejaVuSans.ttf')
-min_font_size = ExifNotes.read_environ('MIN_FONT_SIZE', 14)
+min_font_size = int(ExifNotes.read_environ('MIN_FONT_SIZE', 14))
 
 film_sizes={
     '66':  (3, 4),
@@ -79,7 +79,10 @@ font_size=666
 for count in range(len(image_files)):
     exif_dict = piexif.load(image_files[count])
     exif_data = exif_dict['0th'] | exif_dict['Exif']
-
+    ExifNotes.print_verbose('count: ' + str(count ) + '   ---------------------------------------------')
+    for k, v in exif_data.items():
+        ExifNotes.print_verbose(ExifTags.TAGS[k] + ': ' + str(ExifNotes.read_exif(exif_data, ExifTags.TAGS[k])) + '; data type: ' + str(type(ExifNotes.read_exif(exif_data, ExifTags.TAGS[k]))))
+    
     descs.append([])
     descs[count].append(pathlib.Path(image_files[count]).stem + " " + ExifNotes.read_exif(exif_data, 'DateTimeOriginal'))
     fn = ExifNotes.read_exif (exif_data, 'FNumber')
@@ -104,10 +107,8 @@ for count in range(len(image_files)):
         else :
             et = '1/' + str(round(1 / et)) + 's'
     ec = ExifNotes.read_exif(exif_data, 'ExposureBiasValue')
-    if ec[0] > 0:
-        ec = ' +' + str(ec[0]) + 'EV'
-    elif ec[0] < 0:
-        ec = ' '  + str(ec[0]) + 'EV'
+    if ec :
+        ec = ' ' + ExifNotes.nice_signed_fraction(ec[0] / ec[1]) + 'EV'
     else:
         ec = ''
     descs[count].append(ExifNotes.read_exif (exif_data, 'LensMake') + " " + ExifNotes.read_exif (exif_data, 'LensModel') + " " + fn + " " + et + ec)
@@ -141,6 +142,9 @@ else:
     spool = ''
 header.append (spool + film + ', EI: ' + str(iso))
 header.append (cmk + ' ' + cmd)
+sd = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'SD')
+if len(sd) > 0 :
+    header += sd
 hb = Image.new('RGB', (box_width, header_heigth), (255, 255, 255))
 hbd = ImageDraw.Draw(hb)
 hbd.font = ImageFont.truetype(font_name, scale_font_to_image(hb, font_name, '\n'.join(header)))
