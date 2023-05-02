@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, glob, PIL, math, piexif, pathlib
+import sys, glob, PIL, math, piexif, pathlib, numpy
 from PIL import Image, ImageDraw, ImageFont, ExifTags
 from PIL.ExifTags import Base
 
@@ -161,10 +161,14 @@ for page in range(pages):
         for icol in range(cs_format[0]):
             try:
                 img = Image.open(image_files[count])
+                #img = cv2.imread(image_files[count], cv2.IMREAD_UNCHANGED).convert(mode='RGB')
             except:
                 break
+            if img.mode == 'I;16' :
+                img = Image.fromarray((numpy.array(img).astype(numpy.uint16) / 256).astype(numpy.uint8))
+            img = img.convert(mode='RGB')
             img.thumbnail((ibwidth, ibheight))
-            cs.paste(img.convert(mode='RGB'), 
+            cs.paste(img , 
             (
                 margin_left + icol * (ibwidth + padding_horizontal) + int((ibwidth - img.width) / 2), 
                 margin_top + header_heigth + padding_header + irow * (ibheight + text_box_heigth + padding_text_box + padding_vertical) + int((ibheight - img.height) / 2)  
