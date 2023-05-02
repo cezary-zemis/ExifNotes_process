@@ -43,7 +43,7 @@ contact-sheet
 * put a set of images taken on one roll or batch in its own directory
 * make sure the images contain EXIF tags
 * run contact-sheet in the directory; it requires one or two parameters:
-    * one parameter - pre-defined frame format: 135, 645, 66, 67, 69, 45, 57, 810; it is used only to set number of columns and rows
+    * one parameter - pre-defined frame format: ff (135full frame), 645, 66, 67, 69, 45, 57, 810; it is used only to set number of columns and rows
     * two parameters - number of columns and rows
 
 Notes:
