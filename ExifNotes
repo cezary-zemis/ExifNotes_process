@@ -12,8 +12,9 @@ def extend_command (list, key, tag):
             value = list[key]
     else :
         value = key
+    value=re.sub('"', '\\"', str(value))
     if value :
-        command += ' -' + tag + '="' + str(value) + '"'
+        command += ' "-' + tag + '=' + value + '"'
 
 image_files = ExifNotes.get_image_files()
 ExifNotes.print_verbose(image_files)
@@ -53,8 +54,9 @@ for frame in exif_notes['frames'] :
     extend_command (exif_notes, 'iso', 'ISO')
     extend_command (frame, 'date', 'DateTime')
     extend_command (frame, 'date', 'DateTimeOriginal')
-    extend_command (frame, 'shutter', 'ShutterSpeedValue')
-    extend_command (frame, 'shutter', 'ExposureTime')
+    et = re.sub('"', '', frame['shutter'])
+    extend_command (None, et, 'ShutterSpeedValue')
+    extend_command (None, et, 'ExposureTime')
     extend_command (frame, 'aperture', 'ApertureValue')
     extend_command (frame, 'aperture', 'FNumber')
     if 'exposureComp' in frame :
@@ -79,9 +81,9 @@ for frame in exif_notes['frames'] :
     extend_command (exif_notes, 'artist', 'Artist')
     extend_command (exif_notes, 'copyright', 'Copyright')
     notes=''
-    if exif_notes['name']:
+    if exif_notes['name'] :
         notes = 'Spool: ' + exif_notes['name'] + notes_separator
-    if exif_notes['note']:
+    if 'notes' in exif_notes :
         notes = 'SD: ' + exif_notes['note'] + notes_separator
     if 'notes' in frame : 
         notes += 'ID: ' + frame['note'] + notes_separator
