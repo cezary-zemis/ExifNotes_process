@@ -80,4 +80,4 @@ TODO
 * automatic seting height of text boxes depending on film formats
 * support for processing details 
 * drop using exiftool, use native Python methods instead
-
+* add support for 16-bit grayscale images	
