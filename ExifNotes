@@ -4,22 +4,6 @@ import sys, os, glob, json, re
 import ExifNotes
 from ExifNotes import dry_run, path, extensions, exif_notes_extension, notes_separator, cs_file_name
 
-image_files = ExifNotes.get_image_files()
-if len(image_files) == 0 :
-    raise NameError('Cannot find any *' + extension + ' file')
-exif_notes_file=glob.glob(path + '/*' + exif_notes_extension)
-if len(exif_notes_file) == 0 :
-    raise NameError('Cannot find any *' + exif_notes_extension + ' file')
-if len(exif_notes_file) > 1 :
-    raise NameError('Found ' + str(len(exif_notes_file)) + ' *' + exif_notes_extension + ' files, expected one')
-exif_notes=json.load(open(exif_notes_file[0]))
-if len(exif_notes['frames']) != len(image_files) :
-    raise NameError('Number of ExifNote frames (' + str(len(exif_notes['frames'])) + ') does not match number of found *' + extension + ' files (' + str(len(image_files)) + ')')
-if not 'artist' in exif_notes :
-    exif_notes['artist'] = 'Cezary Żemis'
-if not 'copyright' in exif_notes :
-    exif_notes['copyright'] = 'cezaryzemis.name'
-
 def extend_command (list, key, tag):
     global command
     value = None
@@ -30,6 +14,24 @@ def extend_command (list, key, tag):
         value = key
     if value :
         command += ' -' + tag + '="' + str(value) + '"'
+
+image_files = ExifNotes.get_image_files()
+ExifNotes.print_verbose(image_files)
+if len(image_files) == 0 :
+    raise NameError('Cannot find any *' + extension + ' file')
+exif_notes_file=glob.glob(path + '/*' + exif_notes_extension)
+if len(exif_notes_file) == 0 :
+    raise NameError('Cannot find any *' + exif_notes_extension + ' file')
+if len(exif_notes_file) > 1 :
+    raise NameError('Found ' + str(len(exif_notes_file)) + ' *' + exif_notes_extension + ' files, expected one')
+exif_notes=json.load(open(exif_notes_file[0]))
+ExifNotes.print_verbose(exif_notes)
+if len(exif_notes['frames']) != len(image_files) :
+    raise NameError('Number of ExifNote frames (' + str(len(exif_notes['frames'])) + ') does not match number of found *' + extension + ' files (' + str(len(image_files)) + ')')
+if not 'artist' in exif_notes :
+    exif_notes['artist'] = 'Cezary Żemis'
+if not 'copyright' in exif_notes :
+    exif_notes['copyright'] = 'cezaryzemis.name'
 
 i = 0
 for frame in exif_notes['frames'] :
@@ -55,7 +57,8 @@ for frame in exif_notes['frames'] :
     extend_command (frame, 'shutter', 'ExposureTime')
     extend_command (frame, 'aperture', 'ApertureValue')
     extend_command (frame, 'aperture', 'FNumber')
-    extend_command (frame, 'exposureComp', 'ExposureCompensation')
+    if 'exposureComp' in frame :
+        extend_command (None, ExifNotes.fraction_to_float(frame['exposureComp']), 'ExposureCompensation')
     if 'location' in frame :
         extend_command (frame['location'], 'latitude', 'GPSLatitude')
         latitude_ref = None
@@ -78,7 +81,9 @@ for frame in exif_notes['frames'] :
     notes=''
     if exif_notes['name']:
         notes = 'Spool: ' + exif_notes['name'] + notes_separator
-    if frame['note'] : 
+    if exif_notes['note']:
+        notes = 'SD: ' + exif_notes['note'] + notes_separator
+    if 'notes' in frame : 
         notes += 'ID: ' + frame['note'] + notes_separator
     notes += 'Film: ' + exif_notes['filmStock']['make'] + " " + exif_notes['filmStock']['model']
     if 'filters' in frame :
