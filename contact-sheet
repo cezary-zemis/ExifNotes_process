@@ -8,22 +8,24 @@ from ExifNotes import dry_run, path, extensions, exif_notes_extension, notes_sep
 
 def scale_font_to_image(img, fn, text):
     fs = 333
-    step = round (fs / 2)
+    step = fs
     draw = ImageDraw.Draw(img)
+    ExifNotes.print_verbose('img.width: ' + str(img.width) + ', img.height: ' + str(img.height)) 
     while step >= 1 :
+        step = round(step / 2)
         draw.font = ImageFont.truetype(fn, fs)
         _, _, w, h = draw.textbbox((0, 0), text)
-        w = round(0.95 * w)
-        h = round(0.95 * h)
+        ExifNotes.print_verbose('fs: ' + str(fs) + ', step: ' + str(step) + ', w: ' + str(w) + ', h: ' + str(h))
         if w > img.width or h > img.height :
             fs = fs - step
+            if step == 0 :
+                fs -= 1
         else :
             fs = fs + step
-        step = round(step / 2)
-    fs -= 1
+        fs -= 1
+    ExifNotes.print_verbose('fs: ' + str(fs))
     if fs < min_font_size :
         fs = min_font_size
-    #print('fs: ', fs)
     return fs
      
 resolution = int(ExifNotes.read_environ('RESOLUTION', 300))
@@ -107,7 +109,7 @@ for count in range(len(image_files)):
         else :
             et = '1/' + str(round(1 / et)) + 's'
     ec = ExifNotes.read_exif(exif_data, 'ExposureBiasValue')
-    if ec :
+    if ec and ec[0] > 0:
         ec = ' ' + ExifNotes.nice_signed_fraction(ec[0] / ec[1]) + 'EV'
     else:
         ec = ''
@@ -161,7 +163,6 @@ for page in range(pages):
         for icol in range(cs_format[0]):
             try:
                 img = Image.open(image_files[count])
-                #img = cv2.imread(image_files[count], cv2.IMREAD_UNCHANGED).convert(mode='RGB')
             except:
                 break
             if img.mode == 'I;16' :
