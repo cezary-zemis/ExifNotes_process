@@ -80,3 +80,4 @@ TODO
 * automatic seting height of text boxes depending on film formats
 * support for processing details 
 * drop using exiftool, use native Python methods instead
+* present exposure compansation as common fraction
