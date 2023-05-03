@@ -17,11 +17,12 @@ def scale_font_to_image(img, fn, text):
         _, _, w, h = draw.textbbox((0, 0), text)
         ExifNotes.print_verbose('fs: ' + str(fs) + ', step: ' + str(step) + ', w: ' + str(w) + ', h: ' + str(h))
         if w > img.width or h > img.height :
-            fs = fs - step
-            if step == 0 :
-                fs -= 1
+            fs -= step
         else :
-            fs = fs + step
+            fs += step
+    _, _, w, h = draw.textbbox((0, 0), text)
+    ExifNotes.print_verbose('fs: ' + str(fs) + ', step: ' + str(step) + ', w: ' + str(w) + ', h: ' + str(h))
+    if w > img.width or h > img.height :
         fs -= 1
     ExifNotes.print_verbose('fs: ' + str(fs))
     if fs < min_font_size :
