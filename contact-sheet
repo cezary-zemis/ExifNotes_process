@@ -56,13 +56,13 @@ film_sizes={
     '810': (1, 1)
 }
 
-if not sys.argv[1]:
+if len(sys.argv) < 2 :
     raise NameError('Parameter(s) missing')
 if sys.argv[1] in film_sizes:
     cs_format=film_sizes[sys.argv[1]]
 else:
-    if not sys.argv[2]:
-        raise NameError(sys.rgv[1] + 'not found in defined film sizes, two parameters expected: <colums> <rows>')
+    if len(sys.argv) < 3:
+        raise NameError(sys.argv[1] + ' not found in defined film sizes, two parameters expected: <colums> <rows>')
     cs_format=(int(sys.argv[1]), int(sys.argv[2]))
 if cs_format[0] < 1 or cs_format[1] < 1 :
     raise NameError("contact sheet format must contain two positive values: <colums> <rows>, got" + cs_format)
