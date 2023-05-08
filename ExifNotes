@@ -28,7 +28,7 @@ if len(exif_notes_file) > 1 :
 exif_notes=json.load(open(exif_notes_file[0]))
 ExifNotes.print_verbose(exif_notes)
 if len(exif_notes['frames']) != len(image_files) :
-    raise NameError('Number of ExifNote frames (' + str(len(exif_notes['frames'])) + ') does not match number of found *' + extension + ' files (' + str(len(image_files)) + ')')
+    raise NameError('Number of ExifNote frames (' + str(len(exif_notes['frames'])) + ') does not match number of found ' + '*.'.join(str(extensions)) + ' files (' + str(len(image_files)) + ')')
 if not 'artist' in exif_notes :
     exif_notes['artist'] = 'Cezary Żemis'
 if not 'copyright' in exif_notes :
