@@ -20,12 +20,14 @@ image_files = ExifNotes.get_image_files()
 ExifNotes.print_verbose(image_files)
 if len(image_files) == 0 :
     raise NameError('Cannot find any *' + extension + ' file')
-exif_notes_file=glob.glob(path + '/*' + exif_notes_extension)
-if len(exif_notes_file) == 0 :
+exif_notes_files=glob.glob(path + '/*' + exif_notes_extension)
+if len(exif_notes_files) == 0 :
     raise NameError('Cannot find any *' + exif_notes_extension + ' file')
-if len(exif_notes_file) > 1 :
-    raise NameError('Found ' + str(len(exif_notes_file)) + ' *' + exif_notes_extension + ' files, expected one')
-exif_notes=json.load(open(exif_notes_file[0]))
+exif_notes = json.load(open(exif_notes_files[0]))
+for i in range(len(exif_notes_files)) :
+    if i > 0 :
+        en = json.load(open(exif_notes_files[i]))
+        exif_notes['frames'] += en['frames']
 ExifNotes.print_verbose(exif_notes)
 if len(exif_notes['frames']) != len(image_files) :
     raise NameError('Number of ExifNote frames (' + str(len(exif_notes['frames'])) + ') does not match number of found ' + '*.'.join(str(extensions)) + ' files (' + str(len(image_files)) + ')')
