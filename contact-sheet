@@ -46,14 +46,15 @@ font_name = ExifNotes.read_environ('FONT_NAME', 'DejaVuSans.ttf')
 min_font_size = int(ExifNotes.read_environ('MIN_FONT_SIZE', 14))
 
 film_sizes={
-    '66':  (3, 4),
-    '645': (4, 4),
-    '67':  (2, 4),
-    '69':  (2, 4),
-    'ff':  (6, 7),
-    '45':  (2, 2),
-    '57':  (1, 2),
-    '810': (1, 1)
+    '66':       (3, 4),
+    '645':      (4, 4),
+    '67':       (2, 4),
+    '69':       (2, 4),
+    'ff':       (6, 7),
+    '45':       (2, 2),
+    '57':       (1, 2),
+    '810':      (1, 1),
+    'horizon':  (3, 7)
 }
 
 if len(sys.argv) < 2 :
