@@ -19,7 +19,7 @@ def extend_command (list, key, tag):
 image_files = ExifNotes.get_image_files()
 ExifNotes.print_verbose(image_files)
 if len(image_files) == 0 :
-    raise NameError('Cannot find any *' + extension + ' file')
+    raise NameError('Cannot find any *' + ', *'.join(extensions) + ' files')
 exif_notes_files=glob.glob(path + '/*' + exif_notes_extension)
 if len(exif_notes_files) == 0 :
     raise NameError('Cannot find any *' + exif_notes_extension + ' file')
