@@ -28,7 +28,7 @@ def scale_font_to_image(img, fn, text):
     if fs < min_font_size :
         fs = min_font_size
     return fs
-     
+    
 resolution = int(ExifNotes.read_environ('RESOLUTION', 300))
 pwidth = int(ExifNotes.inches (ExifNotes.read_environ('PAPER_WIDTH', 210 - 10)) * resolution)
 pheight = int(ExifNotes.inches (ExifNotes.read_environ('PAPER_HEIGHT', 297 - 10)) * resolution)
@@ -88,7 +88,7 @@ for count in range(len(image_files)):
         ExifNotes.print_verbose(ExifTags.TAGS[k] + ': ' + str(ExifNotes.read_exif(exif_data, ExifTags.TAGS[k])) + '; data type: ' + str(type(ExifNotes.read_exif(exif_data, ExifTags.TAGS[k]))))
     
     descs.append([])
-    descs[count].append(pathlib.Path(image_files[count]).stem + " " + ExifNotes.read_exif(exif_data, 'DateTimeOriginal'))
+    descs[count].append(' '.join(filter(None, [pathlib.Path(image_files[count]).stem, ExifNotes.read_exif(exif_data, 'DateTimeOriginal')])))
     fn = ExifNotes.read_exif (exif_data, 'FNumber')
     if type(fn) is tuple :
         fn = int(fn[0]) / int(fn[1])
@@ -112,10 +112,10 @@ for count in range(len(image_files)):
             et = '1/' + str(round(1 / et)) + 's'
     ec = ExifNotes.read_exif(exif_data, 'ExposureBiasValue')
     if ec and ec[0] > 0:
-        ec = ' ' + ExifNotes.nice_signed_fraction(ec[0] / ec[1]) + 'EV'
+        ec = ExifNotes.nice_signed_fraction(ec[0] / ec[1]) + 'EV'
     else:
         ec = ''
-    descs[count].append(ExifNotes.read_exif (exif_data, 'LensMake') + " " + ExifNotes.read_exif (exif_data, 'LensModel') + " " + fn + " " + et + ec)
+    descs[count].append(' '.join(filter(None, [ExifNotes.read_exif (exif_data, 'LensMake'), ExifNotes.read_exif (exif_data, 'LensModel'), fn, et, ec])))
     filters = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'Filter')
     if len(filters) > 0 :
         descs[count].append('F: ' + '; '.join(filters))
@@ -130,9 +130,11 @@ for count in range(len(image_files)):
 
 exif_dict = piexif.load(image_files[0])
 exif_data = exif_dict['0th'] | exif_dict['Exif']
-cmk = ExifNotes.read_exif (exif_data, 'Make')
-cmd = ExifNotes.read_exif (exif_data, 'Model')
-iso = ExifNotes.read_exif (exif_data, 'ISOSpeedRatings')
+cmk = str(ExifNotes.read_exif (exif_data, 'Make'))
+cmd = str(ExifNotes.read_exif (exif_data, 'Model'))
+iso = str(ExifNotes.read_exif (exif_data, 'ISOSpeedRatings'))
+if iso:
+    iso = 'EI: ' + iso
 film = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'Film')
 header = []
 if len(film) > 0 :
@@ -141,11 +143,11 @@ else:
     film = ''
 spool = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'Spool')
 if len(spool) > 0 :
-    spool = spool[0] + ': '
+    spool = spool[0] + ':'
 else:
     spool = ''
-header.append (spool + film + ', EI: ' + str(iso))
-header.append (cmk + ' ' + cmd)
+header.append (' '.join(filter(None, [spool, film, iso])))
+header.append (' '.join(filter(None, [cmk, cmd])))
 sd = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'SD')
 if len(sd) > 0 :
     header += sd
