@@ -6,15 +6,15 @@ from ExifNotes import dry_run, path, extensions, exif_notes_extension, notes_sep
 
 def extend_command (list, key, tag):
     global command
-    value = None
+    value = ''
     if list :
         if key in list :
             value = list[key]
     else :
         value = key
-    if value :
-        value=re.sub('"', '\\"', str(value))
-        command += ' "-' + tag + '=' + value + '"'
+    #if value :
+    value=re.sub('"', '\\"', str(value))
+    command += ' "-' + tag + '=' + value + '"'
 
 image_files = ExifNotes.get_image_files()
 ExifNotes.print_verbose(image_files)
@@ -48,10 +48,18 @@ for frame in exif_notes['frames'] :
         extend_command (exif_notes['camera'], 'make', 'Make')
         extend_command (exif_notes['camera'], 'model', 'Model')
         extend_command (exif_notes['camera'], 'serialNumber', 'CameraSerialNumber')
+    else :
+        extend_command (None, '', 'Make')
+        extend_command (None, '', 'Model')
+        extend_command (None, '', 'CameraSerialNumner')
     if 'lens' in frame :
         extend_command (frame['lens'], 'make', 'LensMake')
         extend_command (frame['lens'], 'model', 'LensModel')
         extend_command (frame['lens'], 'serialNumber', 'LensSerialNumber')
+    else :
+        extend_command (None, '', 'LensMake')
+        extend_command (None, '', 'LensModel')
+        extend_command (None, '', 'LensSerialNumber')
     extend_command (frame, 'focalLength', 'FocalLength')
     extend_command (exif_notes, 'iso', 'ISO')
     extend_command (frame, 'date', 'DateTime')
@@ -60,10 +68,15 @@ for frame in exif_notes['frames'] :
         et = re.sub('"', '', frame['shutter'])
         extend_command (None, et, 'ShutterSpeedValue')
         extend_command (None, et, 'ExposureTime')
+    else:
+        extend_command (None, '', 'ShutterSpeedValue')
+        extend_command (None, '', 'ExposureTime')        
     extend_command (frame, 'aperture', 'ApertureValue')
     extend_command (frame, 'aperture', 'FNumber')
     if 'exposureComp' in frame :
         extend_command (None, ExifNotes.fraction_to_float(frame['exposureComp']), 'ExposureCompensation')
+    else:
+        extend_command (None, '', 'ExposureCompensation')
     if 'location' in frame :
         extend_command (frame['location'], 'latitude', 'GPSLatitude')
         latitude_ref = None
@@ -81,6 +94,11 @@ for frame in exif_notes['frames'] :
             else:
                 longitude_ref = 'W'
         extend_command (None, longitude_ref, 'GPSLongitudeRef')
+    else:
+        extend_command (None, '', 'GPSLatitude')
+        extend_command (None, '', 'GPSLatitudeRef')
+        extend_command (None, '', 'GPSLongitude')
+        extend_command (None, '', 'GPSLongitudeRef')
     extend_command (exif_notes, 'artist', 'Artist')
     extend_command (exif_notes, 'copyright', 'Copyright')
     notes=''
