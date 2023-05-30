@@ -2,7 +2,7 @@ import os, pathlib, sys, re, fnmatch, math, fractions
 from PIL.ExifTags import Base
 
 def inches(mm):
-    return mm / 25.4
+    return float(mm) / 25.4
 
 def read_environ(env_var_name, default=None):
     if os.environ.get(env_var_name):
