@@ -111,7 +111,7 @@ for count in range(len(image_files)):
         else :
             et = '1/' + str(round(1 / et)) + 's'
     ec = ExifNotes.read_exif(exif_data, 'ExposureBiasValue')
-    if ec and ec[0] > 0:
+    if ec and ec[0] != 0:
         ec = ExifNotes.nice_signed_fraction(ec[0] / ec[1]) + 'EV'
     else:
         ec = ''
