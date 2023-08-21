@@ -104,9 +104,9 @@ for frame in exif_notes['frames'] :
     notes=''
     if exif_notes['name'] :
         notes = 'Spool: ' + exif_notes['name'] + notes_separator
-    if 'notes' in exif_notes :
+    if 'note' in exif_notes :
         notes = 'SD: ' + exif_notes['note'] + notes_separator
-    if 'notes' in frame : 
+    if 'note' in frame : 
         notes += 'ID: ' + frame['note'] + notes_separator
     notes += 'Film: ' + exif_notes['filmStock']['make'] + " " + exif_notes['filmStock']['model']
     if 'filters' in frame :
