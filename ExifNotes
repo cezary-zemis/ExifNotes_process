@@ -1,8 +1,24 @@
 #!/usr/bin/env python
-import sys, os, glob, json, re
+import sys, os, glob, json, re, argparse
 
 import ExifNotes
 from ExifNotes import dry_run, path, extensions, exif_notes_extension, notes_separator, cs_file_name
+
+params = {
+    "negativeDeveloper": {
+        "short": "d",
+        "label": "NegativeDev",
+        "help": "Negative developer"
+    }
+}
+parser = argparse.ArgumentParser(description="Positive process EXIF")
+for param, meta in params.items():
+    parser.add_argument(
+        f"-{meta['short']}", 
+        f"--{param}", 
+        help=meta.get("help", "")
+    )
+args = parser.parse_args()
 
 def extend_command (list, key, tag):
     global command
@@ -108,6 +124,8 @@ for frame in exif_notes['frames'] :
         notes += 'SD: ' + exif_notes['note'] + notes_separator
     if 'note' in frame : 
         notes += 'ID: ' + frame['note'] + notes_separator
+    if args.negativeDeveloper :
+        notes += f"{params['negativeDeveloper']['label']}: {args.negativeDeveloper}{notes_separator}"
     notes += 'Film: ' + exif_notes['filmStock']['make'] + " " + exif_notes['filmStock']['model']
     if 'filters' in frame :
         for filter in frame['filters'] :
