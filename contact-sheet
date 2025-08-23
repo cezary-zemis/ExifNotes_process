@@ -137,17 +137,22 @@ iso = str(ExifNotes.read_exif (exif_data, 'ISOSpeedRatings'))
 if iso:
     iso = 'EI: ' + iso
 film = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'Film')
-header = []
 if len(film) > 0 :
     film = film[0]
 else:
     film = ''
+developer = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'NegativeDev')
+if len(developer) > 0 :
+    developer = f"dev: {developer[0]}"
+else:
+    developer = ''
 spool = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'Spool')
 if len(spool) > 0 :
     spool = spool[0] + ':'
 else:
     spool = ''
-header.append (' '.join(filter(None, [spool, film, iso])))
+header = []
+header.append (' '.join(filter(None, [spool, film, iso, developer])))
 header.append (' '.join(filter(None, [cmk, cmd])))
 sd = ExifNotes.read_description(ExifNotes.read_exif(exif_data, 'ImageDescription'), 'SD')
 if len(sd) > 0 :
