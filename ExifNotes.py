@@ -1,6 +1,11 @@
 import os, pathlib, sys, re, fnmatch, math, fractions
 from PIL.ExifTags import Base
 
+def print_verbose(str) :
+    global verbose
+    if verbose :
+        print(str)
+        
 def inches(mm):
     return float(mm) / 25.4
 
@@ -39,11 +44,15 @@ def findfiles(which, where='.'):
     rule = re.compile(fnmatch.translate(which), re.IGNORECASE)
     return [name for name in os.listdir(where) if rule.match(name)]
 
-def get_image_files():
-    global extensions, path
+def get_image_files(glob = '*', path = '.'):
+    global extensions
+    print_verbose('get_image_files - glob: ' + glob)
+    print_verbose('get_image_files - extensions: ' + str(extensions))
+    print_verbose('get_image_files - path: ' + path)
+    
     image_files = []
     for ext in extensions:
-        image_files += [f for f in findfiles('*' + ext, path) if not re.search('contact[_-]sheet', os.path.basename(f))]
+        image_files += [f for f in findfiles(glob + ext, path) if not re.search('contact[_-]sheet', os.path.basename(f))]
     image_files.sort()
     return image_files
     
@@ -60,11 +69,6 @@ def fraction_to_float(frac_str):
         frac = float(num) / float(denom)
         return whole - frac if whole < 0 else whole + frac
 
-def print_verbose(str) :
-    global verbose
-    if verbose :
-        print(str)
-        
 def nice_signed_fraction(fl) :
     nsf = '+'
     if fl < 0 :
