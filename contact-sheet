@@ -28,7 +28,7 @@ def scale_font_to_image(img, fn, text):
     if fs < min_font_size :
         fs = min_font_size
     return fs
-    
+
 resolution = int(ExifNotes.read_environ('RESOLUTION', 300))
 pwidth = int(ExifNotes.inches (ExifNotes.read_environ('PAPER_WIDTH', 210 - 10)) * resolution)
 pheight = int(ExifNotes.inches (ExifNotes.read_environ('PAPER_HEIGHT', 297 - 10)) * resolution)
@@ -50,6 +50,7 @@ film_sizes={
     '645':      (4, 4),
     '67':       (2, 4),
     '69':       (2, 4),
+    '612':      (1, 4),
     'ff':       (6, 7),
     '45':       (2, 2),
     '57':       (1, 2),
@@ -68,7 +69,7 @@ else:
 if cs_format[0] < 1 or cs_format[1] < 1 :
     raise NameError("contact sheet format must contain two positive values: <colums> <rows>, got" + cs_format)
 
-image_files = ExifNotes.get_image_files()
+image_files = ExifNotes.get_image_files(path = path)
 if len(image_files) < 1 :
     raise NameError("Cannot find any image file")
 
